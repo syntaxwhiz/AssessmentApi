@@ -170,4 +170,20 @@ public class UserServiceTests
         Assert.Equal("123 Main St", result[0].Address);
     }
 
+    [Fact]
+    public async Task GetAllUsers_WithNoCachedUsers_ReturnsEmptyList()
+    {
+        // Arrange
+        var cacheData = new Dictionary<string, object>();
+        var cacheMock = new Mock<IMemoryCache>();
+        var userService = new UserService(cacheMock.Object);
+        var cachedUsers = new List<User>();
+        cacheMock.Setup(x => x.TryGetValue(UserService.CacheKey, out It.Ref<object>.IsAny)).Returns(false);
+
+        // Act
+        var result = await userService.GetAllUsers();
+
+        // Assert
+        Assert.Empty(result);
+    }
 }
